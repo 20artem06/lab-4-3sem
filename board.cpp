@@ -26,4 +26,6 @@ bool Board::isCellEmpty(int x, int y) const {
     }
     return false;
 }
-
+int Board::getSize() const {
+    return size;
+}

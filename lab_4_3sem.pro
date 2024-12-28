@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     board.cpp \
+    decisionGraph.cpp \
     game.cpp \
     gameUI.cpp \
     main.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
+    DecisionGraph.h \
     board.h \
     game.h \
     gameUI.h \
