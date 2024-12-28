@@ -8,6 +8,7 @@
 #include <QComboBox>
 #include "game.h"
 #include "Player.h"
+#include <QRadioButton>
 
 class GameUI : public QWidget {
     Q_OBJECT
@@ -34,6 +35,10 @@ private:
     QComboBox *sizeComboBox;
     QComboBox *colorComboBoxX;
     QComboBox *colorComboBoxO;
+    QComboBox *aiDepthComboBox;
+    QRadioButton *pvpRadioButton;
+    QRadioButton *aiRadioButton;
+    bool isAIEnabled;
 };
 
 #endif // GAMEUI_H

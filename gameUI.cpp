@@ -4,13 +4,13 @@
 #include <QLabel>
 
 GameUI::GameUI(QWidget *parent)
-    : QWidget(parent), size(5), colorX(Qt::red), colorO(Qt::blue) {
+    : QWidget(parent), size(5), colorX(Qt::red), colorO(Qt::blue), isAIEnabled(false) {
 
     playerX = new Player('X', colorX);
     playerO = new Player('O', colorO);
-    currentPlayer = playerX; // Начинает игрок X
+    currentPlayer = playerX;
 
-    buttons = nullptr; // Изначально указатель на массив кнопок равен nullptr
+    buttons = nullptr;
 
     setupUI();
 }
@@ -53,6 +53,24 @@ void GameUI::setupUI() {
             });
 
 
+    QLabel *aiLabel = new QLabel("Выберите глубину ИИ:");
+    aiDepthComboBox = new QComboBox();
+    aiDepthComboBox->addItem("1", 1);
+    aiDepthComboBox->addItem("3", 3);
+    aiDepthComboBox->addItem("5", 5);
+
+    pvpRadioButton = new QRadioButton("Игрок против игрока");
+    aiRadioButton = new QRadioButton("Игрок против ИИ");
+    pvpRadioButton->setChecked(true);
+
+    connect(pvpRadioButton, &QRadioButton::toggled, this, [=](bool checked) {
+        isAIEnabled = !checked;
+    });
+
+    connect(aiRadioButton, &QRadioButton::toggled, this, [=](bool checked) {
+        isAIEnabled = checked;
+    });
+
     QPushButton *newGameButton = new QPushButton("Начать новую игру");
     connect(newGameButton, &QPushButton::clicked, this, &GameUI::startNewGame);
 
@@ -62,6 +80,10 @@ void GameUI::setupUI() {
     mainLayout->addWidget(colorComboBoxX);
     mainLayout->addWidget(colorLabelO);
     mainLayout->addWidget(colorComboBoxO);
+    mainLayout->addWidget(aiLabel);
+    mainLayout->addWidget(aiDepthComboBox);
+    mainLayout->addWidget(pvpRadioButton);
+    mainLayout->addWidget(aiRadioButton);
     mainLayout->addWidget(newGameButton);
 
     setLayout(mainLayout);
@@ -117,8 +139,6 @@ void GameUI::startNewGame() {
 void GameUI::handleCellClick(int x, int y) {
     if (game->makeMove(x, y, currentPlayer->getSymbol())) {
         buttons[x][y]->setText(QString(currentPlayer->getSymbol()));
-
-
         buttons[x][y]->setStyleSheet("background-color: " + currentPlayer->getColor().name() + ";");
 
         if (game->checkWin(currentPlayer->getSymbol())) {
@@ -127,8 +147,26 @@ void GameUI::handleCellClick(int x, int y) {
             return;
         }
 
-        // Переключение
+
         currentPlayer = (currentPlayer == playerX) ? playerO : playerX;
+
+        if(isAIEnabled) {
+            int depth = aiDepthComboBox->currentData().toInt();
+            auto bestMove = game->getBestAIMove(depth, currentPlayer->getSymbol());
+            if(bestMove.first != -1) {
+                if (game->makeMove(bestMove.first, bestMove.second, currentPlayer->getSymbol())) {
+                    buttons[bestMove.first][bestMove.second]->setText(QString(currentPlayer->getSymbol()));
+                    buttons[bestMove.first][bestMove.second]->setStyleSheet("background-color: " + currentPlayer->getColor().name() + ";");
+
+                    if (game->checkWin(currentPlayer->getSymbol())) {
+                        QMessageBox::information(this, "Победа!", QString("Игрок %1 победил!").arg(currentPlayer->getSymbol()));
+                        resetGame();
+                        return;
+                    }
+                    currentPlayer = (currentPlayer == playerX) ? playerO : playerX;
+                }
+            }
+        }
     }
 }
 
@@ -144,7 +182,6 @@ void GameUI::resetGame() {
 }
 
 GameUI::~GameUI() {
-
     for (int i = 0; i < size; ++i) {
         delete[] buttons[i];
     }
@@ -153,3 +190,4 @@ GameUI::~GameUI() {
     delete playerX;
     delete playerO;
 }
+

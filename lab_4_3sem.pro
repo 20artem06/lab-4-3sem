@@ -11,7 +11,6 @@ CONFIG += c++17
 SOURCES += \
     board.cpp \
     game.cpp \
-    gameGraph.cpp \
     gameUI.cpp \
     main.cpp \
     mainTests.cpp \
@@ -22,7 +21,6 @@ SOURCES += \
 HEADERS += \
     board.h \
     game.h \
-    gameGraph.h \
     gameUI.h \
     player.h \
     testSuite.h \

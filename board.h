@@ -7,11 +7,13 @@ class Board {
 public:
     Board(int size);
     void draw();
-    void update(int x, int y, char player);
-    bool isCellEmpty(int x, int y);
+    bool update(int x, int y, char player);
+    bool isCellEmpty(int x, int y) const;
 
 private:
     std::vector<std::vector<char>> board;
+    int size;
 };
 
 #endif // BOARD_H
+
